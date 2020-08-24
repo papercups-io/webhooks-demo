@@ -1,3 +1,1 @@
 # Papercups Plug-ins
-
-TODO

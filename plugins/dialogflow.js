@@ -3,7 +3,8 @@ const uuid = require('uuid');
 const Papercups = require('../papercups');
 const {sleep} = require('../utils');
 
-const DIALOGFLOW_PROJECT_ID = process.env.DIALOGFLOW_PROJECT_ID || 'taro-v1';
+const DIALOGFLOW_PROJECT_ID =
+  process.env.DIALOGFLOW_PROJECT_ID || 'papercups-demo';
 
 const getAutomatedReply = async (text, sessionId = uuid.v4()) => {
   // A unique identifier for the given session

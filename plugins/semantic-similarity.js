@@ -1,6 +1,6 @@
 const request = require('superagent');
-const Papercups = require('./papercups');
-const {sleep} = require('./utils');
+const Papercups = require('../papercups');
+const {sleep} = require('../utils');
 
 const faqs = [
   {

@@ -1,9 +1,9 @@
 require('dotenv').config();
 
 const express = require('express');
-const CalculatorPlugin = require('./calculator');
-const DialogflowPlugin = require('./dialogflow');
-const NlpPlugin = require('./semantic-similarity');
+const CalculatorPlugin = require('./plugins/calculator');
+const DialogflowPlugin = require('./plugins/dialogflow');
+const NlpPlugin = require('./plugins/semantic-similarity');
 
 const app = express();
 

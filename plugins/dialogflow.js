@@ -1,7 +1,7 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const uuid = require('uuid');
-const Papercups = require('./papercups');
-const {sleep} = require('./utils');
+const Papercups = require('../papercups');
+const {sleep} = require('../utils');
 
 const DIALOGFLOW_PROJECT_ID = process.env.DIALOGFLOW_PROJECT_ID || 'taro-v1';
 

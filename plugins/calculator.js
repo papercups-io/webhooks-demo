@@ -1,5 +1,5 @@
 const math = require('mathjs');
-const Papercups = require('./papercups');
+const Papercups = require('../papercups');
 
 const handleMessageCreated = async (res, message) => {
   const {body, conversation_id} = message;

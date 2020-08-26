@@ -1,6 +1,7 @@
 # Papercups — Webhooks Demo
 
-Check our guide to getting started with webhooks on Papercups :tada: 
+Check our [guide](https://github.com/papercups-io/papercups/wiki/Event-Subscriptions-with-Webhooks) to getting started with webhooks on Papercups :tada:
+
 https://github.com/papercups-io/papercups/wiki/Event-Subscriptions-with-Webhooks
 
 ## Demo Overview

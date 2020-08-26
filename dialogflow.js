@@ -1,6 +1,7 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const uuid = require('uuid');
 const Papercups = require('./papercups');
+const {sleep} = require('./utils');
 
 const DIALOGFLOW_PROJECT_ID = process.env.DIALOGFLOW_PROJECT_ID || 'taro-v1';
 
@@ -45,7 +46,9 @@ const getAutomatedReply = async (text, sessionId = uuid.v4()) => {
 
   switch (action) {
     case 'input.welcome':
+    case 'input.test':
       console.log(`> Query: "${queryText}" \n> Reply: "${fulfillmentText}"`);
+
       return fulfillmentText;
     case 'input.unknown':
     default:
@@ -74,7 +77,8 @@ const handleMessageCreated = async (res, message) => {
     return res.json({ok: true});
   }
 
-  const shouldAttemptReply = await hasNotRepliedYet(conversation_id);
+  // const shouldAttemptReply = await hasNotRepliedYet(conversation_id);
+  const shouldAttemptReply = true; // for testing
 
   console.log({shouldAttemptReply, customer_id});
 
@@ -89,7 +93,8 @@ const handleMessageCreated = async (res, message) => {
       return res.json({ok: true});
     }
 
-    await Papercups.message({
+    await sleep(1000);
+    await Papercups.sendMessage({
       conversation_id,
       body: answer.toString(),
     });

@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const CalculatorPlugin = require('./calculator');
 const DialogflowPlugin = require('./dialogflow');
+const NlpPlugin = require('./semantic-similarity');
 
 const app = express();
 
@@ -35,6 +36,20 @@ api.post('/webhook/dialogflow', (req, res) => {
   switch (event) {
     case 'message:created':
       return DialogflowPlugin.handleMessageCreated(res, payload);
+    case 'webhook:verify':
+    default:
+      return res.send(req.body.payload);
+  }
+});
+
+api.post('/webhook/nlp', (req, res) => {
+  console.log('Webhook event:', req.body);
+
+  const {event, payload} = req.body;
+
+  switch (event) {
+    case 'message:created':
+      return NlpPlugin.handleMessageCreated(res, payload);
     case 'webhook:verify':
     default:
       return res.send(req.body.payload);

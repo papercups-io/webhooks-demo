@@ -1,36 +1,114 @@
 const request = require('superagent');
 
 const BASE_URL = process.env.PAPERCUPS_BASE_URL || 'http://localhost:4000';
-// NB: this expires after 30 mins
-// TODO: make it easier to authenticate
-const ACCESS_TOKEN = process.env.PAPERCUPS_ACCESS_TOKEN;
 
-console.log({ACCESS_TOKEN});
-
-const fetchConversation = async (conversationId, token = ACCESS_TOKEN) => {
-  if (!token) {
-    throw new Error('Invalid token!');
+// TODO: this is just a hacky wrapper around the Papercups API...
+// for now we just handle authenticating manually with email + password
+class Papercups {
+  constructor(email, password) {
+    this.email = email;
+    this.password = password;
+    this.auth = {};
   }
 
-  return request
-    .get(`${BASE_URL}/api/conversations/${conversationId}`)
-    .set('Authorization', token)
-    .then((res) => res.body.data);
-};
+  static init = ({email, password}) => {
+    return new Papercups(email, password);
+  };
 
-const message = async (params, token = ACCESS_TOKEN) => {
-  if (!token) {
-    throw new Error('Invalid token!');
-  }
+  updateAuthInfo = (auth) => {
+    this.auth = auth;
+  };
 
-  return request
-    .post(`${BASE_URL}/api/messages`)
-    .set('Authorization', token)
-    .send({message: params})
-    .then((res) => res.body.data);
-};
+  getAccessToken = async () => {
+    if (this.auth && this.auth.token) {
+      return this.auth.token;
+    }
 
-module.exports = {
-  fetchConversation,
-  message,
-};
+    const {token} = await this.login();
+
+    return token;
+  };
+
+  getRefreshToken = () => {
+    return (this.auth && this.auth.renew_token) || null;
+  };
+
+  login = async () => {
+    return request
+      .post(`${BASE_URL}/api/session`)
+      .send({
+        user: {
+          email: this.email,
+          password: this.password,
+        },
+      })
+      .then((res) => res.body.data)
+      .then((auth) => {
+        this.updateAuthInfo(auth);
+
+        return auth;
+      });
+  };
+
+  refresh = async () => {
+    const token = this.getRefreshToken();
+
+    if (!token) {
+      throw new Error('Missing refresh token!');
+    }
+
+    return request
+      .post(`/api/session/renew`)
+      .set('Authorization', token)
+      .then((res) => res.body.data)
+      .then((auth) => this.updateAuthInfo(auth));
+  };
+
+  sendMessage = async (params, retries = 1) => {
+    const token = await this.getAccessToken();
+
+    if (!token) {
+      throw new Error('Invalid token!');
+    }
+
+    return request
+      .post(`${BASE_URL}/api/messages`)
+      .set('Authorization', token)
+      .send({message: params})
+      .then((res) => res.body.data)
+      .catch((err) => {
+        if (err.status == 401 && retries > 0) {
+          return this.refresh().then(() =>
+            this.sendMessage(params, retries - 1)
+          );
+        }
+      });
+  };
+
+  fetchConversation = async (conversationId, retries = 1) => {
+    const token = await this.getAccessToken();
+
+    if (!token) {
+      throw new Error('Invalid token!');
+    }
+
+    return request
+      .get(`${BASE_URL}/api/conversations/${conversationId}`)
+      .set('Authorization', token)
+      .then((res) => res.body.data)
+      .catch((err) => {
+        if (err.status == 401 && retries > 0) {
+          return this.refresh().then(() =>
+            this.fetchConversation(conversationId, retries - 1)
+          );
+        }
+      });
+  };
+}
+
+const client = Papercups.init({
+  email: process.env.PAPERCUPS_EMAIL,
+  password: process.env.PAPERCUPS_PASSWORD,
+});
+
+module.exports = client;

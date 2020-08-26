@@ -14,7 +14,7 @@ const handleMessageCreated = async (res, message) => {
     const expression = rest.join(' ');
     const answer = math.evaluate(expression);
 
-    await Papercups.message({
+    await Papercups.sendMessage({
       conversation_id,
       body: answer.toString(),
     });

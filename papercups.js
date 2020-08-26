@@ -70,7 +70,7 @@ class Papercups {
     if (!token) {
       throw new Error('Invalid token!');
     }
-
+    console.log('Attempting to send message:', params);
     return request
       .post(`${BASE_URL}/api/messages`)
       .set('Authorization', token)

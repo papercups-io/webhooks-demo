@@ -58,7 +58,7 @@ class Papercups {
     }
 
     return request
-      .post(`/api/session/renew`)
+      .post(`${BASE_URL}/api/session/renew`)
       .set('Authorization', token)
       .then((res) => res.body.data)
       .then((auth) => this.updateAuthInfo(auth));

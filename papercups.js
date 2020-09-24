@@ -61,7 +61,13 @@ class Papercups {
       .post(`${BASE_URL}/api/session/renew`)
       .set('Authorization', token)
       .then((res) => res.body.data)
-      .then((auth) => this.updateAuthInfo(auth));
+      .then((auth) => this.updateAuthInfo(auth))
+      .catch((err) => {
+        if (err.status == 401) {
+          // If unauthorized, attempt to login again
+          return this.login();
+        }
+      });
   };
 
   sendMessage = async (params, retries = 1) => {

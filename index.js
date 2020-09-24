@@ -1,12 +1,14 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const CalculatorPlugin = require('./plugins/calculator');
 const DialogflowPlugin = require('./plugins/dialogflow');
 const NlpPlugin = require('./plugins/semantic-similarity');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 

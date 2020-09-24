@@ -2,7 +2,7 @@ const request = require('superagent');
 const Papercups = require('../papercups');
 const {sleep} = require('../utils');
 
-const faqs = [
+const TEST_FAQS = [
   {
     q: 'what is papercups?',
     a:
@@ -41,7 +41,7 @@ const getSemanticSimilarity = (a, b) => {
     });
 };
 
-const findBestMatch = async (str, min = 0.5) => {
+const findBestMatch = async (str, faqs = TEST_FAQS, min = 0.5) => {
   const promises = faqs.map(({q, a}) => {
     return getSemanticSimilarity(str, q).then((score) => {
       return {q, a, score};
@@ -80,6 +80,32 @@ const handleMessageCreated = async (res, message) => {
   }
 
   return res.json({ok: true});
+};
+
+// TODO: get this working!
+const demo = async (message, faqs = []) => {
+  const {body, conversation_id, customer_id} = message;
+
+  if (!customer_id) {
+    return null;
+  }
+
+  try {
+    const answer = await findBestMatch(body, faqs);
+
+    if (!answer) {
+      return null;
+    }
+
+    await sleep(400);
+    await Papercups.sendMessage({
+      conversation_id,
+      body: answer.toString(),
+    });
+  } catch (err) {
+    // Do nothing
+    console.error(err);
+  }
 };
 
 module.exports = {

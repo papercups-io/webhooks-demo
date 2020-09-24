@@ -56,6 +56,16 @@ api.post('/webhook/nlp', (req, res) => {
   }
 });
 
+// TODO: get this working for chatbot demo!
+api.post('/demo/nlp', async (req, res) => {
+  console.log('Demo payload:', req.body);
+  const {message, faqs = []} = req.body;
+  const result = await NlpPlugin.demo(message, faqs);
+  console.log('NLP demo result:', result);
+
+  return res.json({ok: true});
+});
+
 app.use('/api', api);
 
 const port = process.env.PORT || 3000;

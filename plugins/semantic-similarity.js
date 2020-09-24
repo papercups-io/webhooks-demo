@@ -97,6 +97,7 @@ const demo = async (message, faqs = []) => {
       return null;
     }
 
+    await sleep(400);
     const result = await Papercups.sendMessage({
       conversation_id,
       body: answer.toString(),

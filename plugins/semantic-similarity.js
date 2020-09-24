@@ -109,6 +109,7 @@ const demo = async (message, faqs = []) => {
 };
 
 module.exports = {
+  demo,
   getSemanticSimilarity,
   findBestMatch,
   handleMessageCreated,

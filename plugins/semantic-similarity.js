@@ -97,13 +97,17 @@ const demo = async (message, faqs = []) => {
       return null;
     }
 
-    await Papercups.sendMessage({
+    const result = await Papercups.sendMessage({
       conversation_id,
       body: answer.toString(),
     });
+
+    return result;
   } catch (err) {
     // Do nothing
     console.error(err);
+
+    return null;
   }
 };
 

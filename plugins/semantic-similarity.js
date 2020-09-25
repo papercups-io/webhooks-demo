@@ -94,7 +94,7 @@ const demo = async (message, faqs = []) => {
   try {
     const answer = await findBestMatch(body, faqs);
 
-    await sleep(400);
+    await sleep(1000);
 
     if (!answer) {
       return Papercups.sendMessage({

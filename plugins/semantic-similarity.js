@@ -94,17 +94,19 @@ const demo = async (message, faqs = []) => {
   try {
     const answer = await findBestMatch(body, faqs);
 
+    await sleep(400);
+
     if (!answer) {
-      return null;
+      return Papercups.sendMessage({
+        conversation_id,
+        body: 'Sorry, not sure I have an answer to that!',
+      });
     }
 
-    await sleep(400);
-    const result = await Papercups.sendMessage({
+    return Papercups.sendMessage({
       conversation_id,
       body: answer.toString(),
     });
-
-    return result;
   } catch (err) {
     // Do nothing
     console.error(err);

@@ -51,6 +51,7 @@ const findBestMatch = async (str, faqs = TEST_FAQS, min = 0.5) => {
   const [best] = scores
     .filter(({score}) => score > min)
     .sort((a, b) => b.score - a.score);
+  console.log('Match scores:', scores);
 
   return best ? best.a : null;
 };

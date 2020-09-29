@@ -83,7 +83,7 @@ const handleMessageCreated = async (res, message) => {
   return res.json({ok: true});
 };
 
-// TODO: get this working!
+// This logic handles the chatbot demo at https://app.papercups.io/bot/demo
 const demo = async (message, faqs = []) => {
   const {body, conversation_id, customer_id} = message;
 

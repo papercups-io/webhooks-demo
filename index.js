@@ -58,7 +58,8 @@ api.post('/webhook/nlp', (req, res) => {
   }
 });
 
-// TODO: get this working for chatbot demo!
+// This endpoint handles the chatbot demo at
+// https://app.papercups.io/bot/demo
 api.post('/demo/nlp', async (req, res) => {
   console.log('Demo payload:', req.body);
   const {message, faqs = []} = req.body;

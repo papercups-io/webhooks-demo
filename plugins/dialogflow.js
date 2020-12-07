@@ -1,17 +1,29 @@
 const dialogflow = require('@google-cloud/dialogflow');
 const uuid = require('uuid');
-const Papercups = require('../papercups');
+const Papercups = require('../papercups')(process.env.PAPERCUPS_API_KEY);
+
 const {sleep} = require('../utils');
 
 const DIALOGFLOW_PROJECT_ID =
   process.env.DIALOGFLOW_PROJECT_ID || 'papercups-demo';
+
+const credentials = {
+  private_key: process.env.DIALOGFLOW_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  client_email: process.env.DIALOGFLOW_CLIENT_EMAIL,
+  project_id: process.env.DIALOGFLOW_PROJECT_ID,
+};
+
+const config = {
+  credentials,
+  projectId: credentials.project_id,
+};
 
 const getAutomatedReply = async (text, sessionId = uuid.v4()) => {
   // A unique identifier for the given session
   console.log({sessionId});
 
   // Create a new session
-  const client = new dialogflow.SessionsClient();
+  const client = new dialogflow.SessionsClient(config);
   const session = client.projectAgentSessionPath(
     DIALOGFLOW_PROJECT_ID,
     sessionId
@@ -78,8 +90,7 @@ const handleMessageCreated = async (res, message) => {
     return res.json({ok: true});
   }
 
-  // const shouldAttemptReply = await hasNotRepliedYet(conversation_id);
-  const shouldAttemptReply = true; // for testing
+  const shouldAttemptReply = await hasNotRepliedYet(conversation_id);
 
   console.log({shouldAttemptReply, customer_id});
 

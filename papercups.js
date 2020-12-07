@@ -5,116 +5,41 @@ const BASE_URL = process.env.PAPERCUPS_BASE_URL || 'https://app.papercups.io';
 // TODO: this is just a hacky wrapper around the Papercups API...
 // for now we just handle authenticating manually with email + password
 class Papercups {
-  constructor(email, password) {
-    this.email = email;
-    this.password = password;
-    this.auth = {};
+  constructor(token) {
+    this.token = token;
   }
 
-  static init = ({email, password}) => {
-    return new Papercups(email, password);
+  static init = (token) => {
+    return new Papercups(token);
   };
 
-  updateAuthInfo = (auth) => {
-    this.auth = auth;
-  };
-
-  getAccessToken = async () => {
-    if (this.auth && this.auth.token) {
-      return this.auth.token;
-    }
-
-    const {token} = await this.login();
-
-    return token;
-  };
-
-  getRefreshToken = () => {
-    return (this.auth && this.auth.renew_token) || null;
-  };
-
-  login = async () => {
-    return request
-      .post(`${BASE_URL}/api/session`)
-      .send({
-        user: {
-          email: this.email,
-          password: this.password,
-        },
-      })
-      .then((res) => res.body.data)
-      .then((auth) => {
-        this.updateAuthInfo(auth);
-
-        return auth;
-      });
-  };
-
-  refresh = async () => {
-    const token = this.getRefreshToken();
-
-    if (!token) {
-      throw new Error('Missing refresh token!');
-    }
-
-    return request
-      .post(`${BASE_URL}/api/session/renew`)
-      .set('Authorization', token)
-      .then((res) => res.body.data)
-      .then((auth) => this.updateAuthInfo(auth))
-      .catch((err) => {
-        if (err.status == 401) {
-          // If unauthorized, attempt to login again
-          return this.login();
-        }
-      });
-  };
-
-  sendMessage = async (params, retries = 1) => {
-    const token = await this.getAccessToken();
+  sendMessage = async (params) => {
+    const token = this.token;
 
     if (!token) {
       throw new Error('Invalid token!');
     }
+
     console.log('Attempting to send message:', params);
     return request
-      .post(`${BASE_URL}/api/messages`)
-      .set('Authorization', token)
+      .post(`${BASE_URL}/api/v1/messages`)
+      .set('Authorization', `Bearer ${token}`)
       .send({message: params})
-      .then((res) => res.body.data)
-      .catch((err) => {
-        if (err.status == 401 && retries > 0) {
-          return this.refresh().then(() =>
-            this.sendMessage(params, retries - 1)
-          );
-        }
-      });
+      .then((res) => res.body.data);
   };
 
-  fetchConversation = async (conversationId, retries = 1) => {
-    const token = await this.getAccessToken();
+  fetchConversation = async (conversationId) => {
+    const token = this.token;
 
     if (!token) {
       throw new Error('Invalid token!');
     }
 
     return request
-      .get(`${BASE_URL}/api/conversations/${conversationId}`)
-      .set('Authorization', token)
-      .then((res) => res.body.data)
-      .catch((err) => {
-        if (err.status == 401 && retries > 0) {
-          return this.refresh().then(() =>
-            this.fetchConversation(conversationId, retries - 1)
-          );
-        }
-      });
+      .get(`${BASE_URL}/api/v1/conversations/${conversationId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .then((res) => res.body.data);
   };
 }
 
-const client = Papercups.init({
-  email: process.env.PAPERCUPS_EMAIL,
-  password: process.env.PAPERCUPS_PASSWORD,
-});
-
-module.exports = client;
+module.exports = Papercups.init;

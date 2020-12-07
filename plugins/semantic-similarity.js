@@ -1,5 +1,5 @@
 const request = require('superagent');
-const Papercups = require('../papercups');
+const Papercups = require('../papercups')(process.env.PAPERCUPS_API_KEY);
 const {sleep} = require('../utils');
 
 const TEST_FAQS = [

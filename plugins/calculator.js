@@ -1,5 +1,5 @@
 const math = require('mathjs');
-const Papercups = require('../papercups');
+const Papercups = require('../papercups')(process.env.PAPERCUPS_API_KEY);
 
 const handleMessageCreated = async (res, message) => {
   const {body, conversation_id} = message;

@@ -7,20 +7,21 @@ const {sleep} = require('../utils');
 const DIALOGFLOW_PROJECT_ID =
   process.env.DIALOGFLOW_PROJECT_ID || 'papercups-demo';
 
-const credentials = {
-  private_key: process.env.DIALOGFLOW_PRIVATE_KEY.replace(/\\n/g, '\n'),
-  client_email: process.env.DIALOGFLOW_CLIENT_EMAIL,
-  project_id: process.env.DIALOGFLOW_PROJECT_ID,
-};
-
-const config = {
-  credentials,
-  projectId: credentials.project_id,
-};
-
 const getAutomatedReply = async (text, sessionId = uuid.v4()) => {
   // A unique identifier for the given session
   console.log({sessionId});
+
+  // Set up credentials with env variables
+  const credentials = {
+    private_key: process.env.DIALOGFLOW_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    client_email: process.env.DIALOGFLOW_CLIENT_EMAIL,
+    project_id: process.env.DIALOGFLOW_PROJECT_ID,
+  };
+
+  const config = {
+    credentials,
+    projectId: credentials.project_id,
+  };
 
   // Create a new session
   const client = new dialogflow.SessionsClient(config);

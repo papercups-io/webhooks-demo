@@ -91,6 +91,7 @@ const handleMessageCreated = async (res, message) => {
     return res.json({ok: true});
   }
 
+  await sleep(2000);
   const shouldAttemptReply = await hasNotRepliedYet(conversation_id);
 
   console.log({shouldAttemptReply, customer_id});

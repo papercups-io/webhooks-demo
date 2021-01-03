@@ -2,8 +2,7 @@ const request = require('superagent');
 
 const BASE_URL = process.env.PAPERCUPS_BASE_URL || 'https://app.papercups.io';
 
-// TODO: this is just a hacky wrapper around the Papercups API...
-// for now we just handle authenticating manually with email + password
+// TODO: this is just a hacky wrapper around the Papercups API
 class Papercups {
   constructor(token) {
     this.token = token;
